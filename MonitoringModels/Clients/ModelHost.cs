@@ -3,13 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
+using System.Net;
+
 
 namespace MonitoringModels.Clients
 {
     public class ModelHost
     {
+        #region Fields
+
         // ID
-        public System.Guid Host_ID { get; set; }
+        public Guid Host_ID { get; set; }
         // IP adress
         public string IP { get; set; }
         // DNS name of the host-name
@@ -19,21 +24,22 @@ namespace MonitoringModels.Clients
         // Network state 
         public bool State { get; set; }
         // Last successful connection (ping)
-        public System.DateTime Last_Appeal { get; set; }
+        public DateTime Last_Appeal { get; set; }
+
+        #endregion
 
 
-        public ModelHost(string ip, string DNS_Name, string Display_Name, bool state)
+        #region Ctors
+        public ModelHost() => Host_ID = Guid.NewGuid();
+
+        public ModelHost(string ip, string DNS_Name, string Display_Name, bool state) : this()
         {
-            this.IP = ip;
+            IP = ip;
             this.DNS_Name = DNS_Name;
             this.Display_Name = Display_Name;
-            this.State = state;
-            this.Last_Appeal = DateTime.Now;
+            State = state;
+            Last_Appeal = DateTime.Now;
         }
-
-        public ModelHost()
-        {
-
-        }
+        #endregion
     }
 }

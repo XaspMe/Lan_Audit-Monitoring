@@ -8,5 +8,6 @@ namespace MonitoringModels.Clients
 {
     class ModelPC : ModelHost
     {
+
     }
 }
