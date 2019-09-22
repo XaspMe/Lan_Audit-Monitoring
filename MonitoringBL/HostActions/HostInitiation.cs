@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using MonitoringModels.Clients;
 using System.Text.RegularExpressions;
 using System.Net;
+using Monitoring_DB;
+using AutoMapper;
 
 namespace MonitoringBL.HostActions
 {
@@ -13,17 +15,7 @@ namespace MonitoringBL.HostActions
     {
         public ModelHost modelHost { get; set; }
 
-        public HostInitiation(string adress, string displaName)
-        {
-            initialize(adress, displaName);
-        }
-
-
-        /// <summary>
-        /// Initialize 
-        /// </summary>
-        /// <param name="adress"></param>
-        private void initialize(string adress, string displayName)
+        public HostInitiation(string adress, string displayName)
         {
             if (string.IsNullOrWhiteSpace(adress))
             {
@@ -38,7 +30,6 @@ namespace MonitoringBL.HostActions
             modelHost = new ModelHost();
 
             // Set ip or dns
-
             if (IsIp(adress))
             {
                 modelHost.IP = adress;
@@ -66,6 +57,51 @@ namespace MonitoringBL.HostActions
             modelHost.Last_Appeal = DateTime.Now;
         }
 
+        public Exception SaveToDb()
+        {
+            try
+            {
+
+                if (isPrepared())
+                {
+                    using (Monitoring_DB.MonitoringContainer db = new MonitoringContainer())
+                    {
+                        var config = new MapperConfiguration(cfg =>
+                        {
+                            cfg.CreateMap<ModelHost, Host>();
+                        });
+
+                        IMapper iMapper = config.CreateMapper();
+                        config.AssertConfigurationIsValid();
+                        // добавление элементов
+                        db.HostSet.Add(iMapper.Map<ModelHost, Host>(modelHost));
+                        db.SaveChanges();
+                    }
+                    return null;
+                }
+                else
+                    return new ArgumentNullException("Fill all data", nameof(modelHost));
+            }
+            catch(Exception ex)
+            {
+                return ex;
+            }
+        }
+
+        private bool isPrepared()
+        {
+            if (string.IsNullOrEmpty(modelHost.Display_Name) || 
+               (string.IsNullOrEmpty(modelHost.DNS_Name) && string.IsNullOrEmpty(modelHost.IP)))
+                return false;
+            else
+                return true;
+        }
+
+        /// <summary>
+        /// Ping command
+        /// </summary>
+        /// <param name="time">Waiting response time in msec.</param>
+        /// <returns></returns>
         private bool Available(int time = 50)
         {
             // TODO: Вынести в конфиги время ожидания пинга.
@@ -82,7 +118,7 @@ namespace MonitoringBL.HostActions
         }
 
         /// <summary>
-        /// Set ip adress to host from dns name.
+        /// Return IP from DNS_Name.
         /// </summary>
         private string GetIPbyName(string host)
         {
@@ -90,7 +126,7 @@ namespace MonitoringBL.HostActions
         }
 
         /// <summary>
-        /// Set dns name to host from IP.
+        /// Return dns name from IP.
         /// </summary>
         private string GetDnsNameByIp(string ip)
         {
