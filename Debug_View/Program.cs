@@ -26,12 +26,8 @@ namespace Debug_View
 
             Console.WriteLine(initiation.SaveToDb());
 
-            using (Monitoring_DB.MonitoringContainer db = new MonitoringContainer())
+            using (MonitoringContainer db = new MonitoringContainer())
             {
-                //    // добавление элементов
-                //    db.HostSet.Add(iMapper.Map<ModelHost, Host>(new ModelHost("101231", "MyTestDNSName", "MyTestDisplayName", true)));
-                //    db.SaveChanges();
-                //    // получение элементов
                 var hosts = db.HostSet;
                 foreach (Host u in hosts)
                     Console.WriteLine($"{u.Display_Name}, {u.DNS_Name}, {u.Last_Appeal} {u.Host_ID}");

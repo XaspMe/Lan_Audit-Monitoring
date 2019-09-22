@@ -66,15 +66,7 @@ namespace MonitoringBL.HostActions
                 {
                     using (Monitoring_DB.MonitoringContainer db = new MonitoringContainer())
                     {
-                        var config = new MapperConfiguration(cfg =>
-                        {
-                            cfg.CreateMap<ModelHost, Host>();
-                        });
-
-                        IMapper iMapper = config.CreateMapper();
-                        config.AssertConfigurationIsValid();
-                        // добавление элементов
-                        db.HostSet.Add(iMapper.Map<ModelHost, Host>(modelHost));
+                        db.HostSet.Add(AutomapperConfiguration.iMapper.Map<ModelHost, Host>(modelHost));
                         db.SaveChanges();
                     }
                     return null;

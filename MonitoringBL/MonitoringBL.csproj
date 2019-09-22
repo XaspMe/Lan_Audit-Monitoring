@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AutomapperConfiguration.cs" />
     <Compile Include="HostActions\HostInitiation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
