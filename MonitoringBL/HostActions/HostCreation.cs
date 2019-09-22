@@ -9,41 +9,61 @@ using System.Net;
 
 namespace MonitoringBL.HostActions
 {
-    class HostInitiation
+    public class HostInitiation
     {
-        private ModelHost modelHost { get; set;}
+        public ModelHost modelHost { get; set; }
+
+        public HostInitiation(string adress, string displaName)
+        {
+            initialize(adress, displaName);
+        }
+
 
         /// <summary>
         /// Initialize 
         /// </summary>
         /// <param name="adress"></param>
-        public void Start(string adress)
+        private void initialize(string adress, string displayName)
         {
+            if (string.IsNullOrWhiteSpace(adress))
+            {
+                throw new ArgumentException("Null or white space", nameof(adress));
+            }
+
+            if (string.IsNullOrWhiteSpace(displayName))
+            {
+                throw new ArgumentException("Null or white space", nameof(displayName));
+            }
+
             modelHost = new ModelHost();
 
-            if (!string.IsNullOrWhiteSpace(adress))
+            // Set ip or dns
+
+            if (IsIp(adress))
             {
-                if (IsIp(adress))
+                modelHost.IP = adress;
+                if (this.Available())
                 {
-                    modelHost.IP = adress;
-                    if (this.Available())
-                    {
-                        modelHost.DNS_Name = GetDnsNameByIp(adress);
-                    }
+                    modelHost.State = true;
+                    modelHost.DNS_Name = GetDnsNameByIp(adress);
                 }
                 else
-                {
-                    modelHost.DNS_Name = adress;
-                    if (Available())
-                    {
-                        modelHost.IP = GetIPbyName(adress);
-                    }
-                }
+                    modelHost.State = false;
             }
             else
             {
-                throw new ArgumentException("Adress cannot be null.");
+                modelHost.DNS_Name = adress;
+                if (Available())
+                {
+                    modelHost.State = true;
+                    modelHost.IP = GetIPbyName(adress);
+                }
+                else
+                    modelHost.State = false;
             }
+
+            modelHost.Display_Name = displayName;
+            modelHost.Last_Appeal = DateTime.Now;
         }
 
         private bool Available(int time = 50)

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Monitoring_DB;
-//using MonitoringModels.Clients;
+using MonitoringBL.HostActions;
 using AutoMapper;
 
 namespace Debug_View
@@ -33,7 +33,15 @@ namespace Debug_View
             //    foreach (Host u in hosts)
             //        Console.WriteLine($"{u.Display_Name}, {u.DNS_Name}, {u.Last_Appeal} {u.Host_ID}");
             //}
-            //Console.Read();
+            HostInitiation initiation = new HostInitiation("192.168.0.104", "MyTestPc");
+            Console.WriteLine(initiation.modelHost.Last_Appeal);
+            Console.WriteLine(initiation.modelHost.Host_ID);
+            Console.WriteLine(initiation.modelHost.IP);
+            Console.WriteLine(initiation.modelHost.DNS_Name);
+            Console.WriteLine(initiation.modelHost.State);
+
+
+            Console.Read();
         }
     }
 }
